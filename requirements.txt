@@ -1,0 +1,9 @@
+pandas
+psycopg2-binary
+selenium==4.15.2
+schedule==1.2.1
+apscheduler==3.10.4
+sqlalchemy==2.0.23
+numpy
+requests==2.31.0
+python-dotenv==1.0.0 

@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model JobListing {
+  id              Int               @id @default(autoincrement())
+  positionTitle   String            @map("position_title")
+  postingDate     DateTime          @map("posting_date")
+  applyLink       String?           @map("apply_link")
+  workModel       String?           @map("work_model")
+  location        String?
+  company         String
+  companySize     String?           @map("company_size")
+  companyIndustry String?           @map("company_industry")
+  salary          String?
+  qualifications  String?
+  h1bSponsored    Boolean           @default(false) @map("h1b_sponsored")
+  isNewGrad       Boolean           @default(false) @map("is_new_grad")
+  jobCategory     String?           @map("job_category")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  lastSeenAt      DateTime          @default(now()) @map("last_seen_at")
+  isActive        Boolean           @default(true) @map("is_active")
+  contentHash     String            @map("content_hash")
+  applications    UserApplication[]
+
+  @@map("job_listings")
+}
+
+model UserApplication {
+  id            Int                        @id @default(autoincrement())
+  jobListingId  Int                        @map("job_listing_id")
+  userId        String                     @map("user_id")
+  currentStatus String                     @default("Applied") @map("current_status")
+  appliedAt     DateTime                   @default(now()) @map("applied_at")
+  updatedAt     DateTime                   @updatedAt @map("updated_at")
+  notes         String?
+  statusHistory ApplicationStatusHistory[]
+  jobListing    JobListing                 @relation(fields: [jobListingId], references: [id])
+
+  @@unique([jobListingId, userId])
+  @@map("user_applications")
+}
+
+model ApplicationStatusHistory {
+  id                Int             @id @default(autoincrement())
+  userApplicationId Int             @map("user_application_id")
+  status            String
+  changedAt         DateTime        @default(now()) @map("changed_at")
+  notes             String?
+  userApplication   UserApplication @relation(fields: [userApplicationId], references: [id])
+
+  @@map("application_status_history")
+}
